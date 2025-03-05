@@ -75,6 +75,8 @@ IP=$2
 
 IPFAMILY=$3
 
+IPFILE="${IP}${IPFAMILY}"
+
 if [ ! "$IP" ]; then
 
    echo "No IP address supplied"
@@ -109,9 +111,9 @@ if [ ! -d $FILEDIR ]; then
 fi
 
 
-if [ ! -f $SCANDIR/$IP.base ]; then
+if [ ! -f $SCANDIR/$IPFILE.base ]; then
 
-   touch $SCANDIR/$IP.base
+   touch $SCANDIR/$IPFILE.base
    INITIAL=1
 
 fi
@@ -119,7 +121,7 @@ fi
 SCANTIME=`/bin/date +%Y%m%d-%H%M`
 
 /usr/bin/nmap $IPFAMILY -sT -P0 $IP | /bin/grep -w open | \
-/usr/bin/sort > $SCANDIR/$IP
+/usr/bin/sort > $SCANDIR/$IPFILE
 
 function get_changes
 {
@@ -132,7 +134,7 @@ function get_changes
        flag="-1"
    fi
 
-   /usr/bin/comm $flag -3 $SCANDIR/$IP $SCANDIR/$IP.base \
+   /usr/bin/comm $flag -3 $SCANDIR/$IPFILE $SCANDIR/$IPFILE.base \
       | /usr/bin/awk '{print $1}' \
       | /usr/bin/paste -s -d " " -
 }
@@ -142,7 +144,7 @@ CLOSED=`get_changes closed`
 
 if [ $INITIAL -eq 1 ]; then
 
-   /bin/cat $SCANDIR/$IP > $SCANDIR/$IP.base
+   /bin/cat $SCANDIR/$IPFILE > $SCANDIR/$IPFILE.base
    echo "Initial scan"
    exit 0
 fi
