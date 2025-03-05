@@ -8,6 +8,9 @@
 # Copyright (C) 2005 Mark Stingley
 # mark AT altsec.info
 #
+# Updated for IPv6 2025 by jamespo (at) gmail
+#
+#
 # If you need help with your security or systems administration,
 # see http://www.altsec.info
 #
@@ -60,15 +63,17 @@
 # 3.  incorporate critical port lists
 #
 # - - - - - - - - SET THESE VARIABLES - - - - - - - - - - - - 
-BASEDIR=/etc/nagios/scancheck  #where to keep everything
-                               #must be nagios user writable
-NMAPPATH=/usr/bin              #where is nmap
+BASEDIR="${BASEDIR:-/etc/nagios/scancheck}"  #where to keep everything
+                                             #must be nagios user writable
+NMAPPATH=/usr/bin                            #where is nmap
 #------------------------------------------------------------
 
 #note... to run manually, you have to supply a dummy
 #argument 1, since the ip address is arg2
 
 IP=$2
+
+IPFAMILY=$3
 
 if [ ! "$IP" ]; then
 
@@ -113,7 +118,7 @@ fi
 
 SCANTIME=`/bin/date +%Y%m%d-%H%M`
 
-/usr/bin/nmap -sT -P0 $IP | /bin/grep -w open | \
+/usr/bin/nmap $IPFAMILY -sT -P0 $IP | /bin/grep -w open | \
 /usr/bin/sort > $SCANDIR/$IP
 
 function get_changes
